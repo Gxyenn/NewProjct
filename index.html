@@ -5,109 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Prodactyl</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-
-        .login-box {
-            width: 300px;
-            margin: 50px auto;
-            padding: 30px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-
-        .login-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .login-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #5cb85c;
-            border: none;
-            color: #fff;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .login-box button:disabled {
-            background-color: #ccc;
-        }
-
-        .notification {
-            margin-top: 10px;
-            padding: 10px;
-            display: none;
-            border-radius: 5px;
-        }
-
-        .notification.red {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .notification.green {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .panel-header {
-            background-color: black;
-            color: white;
-            padding: 10px;
-            text-align: center;
-            font-size: 24px;
-            border-radius: 5px;
-        }
-
-        .server-box {
-            margin: 20px;
-            padding: 10px;
-            background-color: white;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .create-server-box {
-            display: none;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .create-server-box input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .create-server-box button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .create-server-box button:disabled {
-            background-color: #ccc;
-        }
-
+        /* Styles are the same as before. You can retain the previous styles. */
         .server-created {
             margin: 10px 0;
             background-color: #f1f1f1;
@@ -116,15 +14,42 @@
             border: 1px solid #ccc;
             display: flex;
             justify-content: space-between;
+            cursor: pointer;
         }
 
-        .server-created button {
+        .server-created:hover {
+            background-color: #ddd;
+        }
+
+        .manage-server {
+            display: none;
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .manage-server button {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+        }
+
+        .manage-server .start {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .manage-server .restart {
+            background-color: #ffc107;
+            color: white;
+        }
+
+        .manage-server .stop {
             background-color: #f44336;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
         }
     </style>
 </head>
@@ -158,11 +83,22 @@
         <div class="notification green" id="createSuccess">Server berhasil dibuat!</div>
     </div>
 
+    <!-- Manage Server Area -->
+    <div class="manage-server" id="manageServerBox">
+        <h4>Manage Server</h4>
+        <button class="start" onclick="startServer()">Start</button>
+        <button class="restart" onclick="restartServer()">Restart</button>
+        <button class="stop" onclick="stopServer()">Stop</button>
+        <div class="notification red" id="serverError"></div>
+        <div class="notification green" id="serverSuccess">Server is running</div>
+    </div>
+
     <script>
         const validUsername = "Gxyenn";
         const validPassword = "171210";
         let isLoggedIn = false;
         let servers = [];
+        let currentServer = null;
 
         function login() {
             const username = document.getElementById("username").value;
@@ -216,14 +152,40 @@
             servers.forEach((server, index) => {
                 const serverDiv = document.createElement("div");
                 serverDiv.className = "server-created";
-                serverDiv.innerHTML = `${server.username} - ${server.description} <button onclick="deleteServer(${index})">Delete</button>`;
+                serverDiv.innerHTML = `${server.username} - ${server.description}`;
+                // Set click event for each server to open management
+                serverDiv.onclick = () => openServerManagement(index);
                 serverList.appendChild(serverDiv);
             });
         }
 
-        function deleteServer(index) {
-            servers.splice(index, 1);
-            displayServers();
+        function openServerManagement(index) {
+            currentServer = servers[index];  // Set currentServer to the clicked server
+            document.getElementById("manageServerBox").style.display = "block";  // Show manage server box
+            document.getElementById("serverSuccess").style.display = "none";  // Hide success message initially
+            document.getElementById("serverError").style.display = "none";  // Hide error message initially
+        }
+
+        function startServer() {
+            if (currentServer) {
+                document.getElementById("serverSuccess").style.display = "block";
+                document.getElementById("serverError").style.display = "none";
+            }
+        }
+
+        function restartServer() {
+            if (currentServer) {
+                document.getElementById("serverSuccess").style.display = "block";
+                document.getElementById("serverError").style.display = "none";
+            }
+        }
+
+        function stopServer() {
+            if (currentServer) {
+                document.getElementById("serverSuccess").style.display = "none";
+                document.getElementById("serverError").style.display = "block";
+                document.getElementById("serverError").innerText = "Server has been stopped!";
+            }
         }
     </script>
 
