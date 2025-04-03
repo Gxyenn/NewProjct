@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prodactyl Panel</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            width: 300px;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #000;
+            color: #fff;
+            cursor: pointer;
+        }
+        .footer {
+            margin-top: 10px;
+            font-size: 10px;
+            color: #ccc;
+        }
+    </style>
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+            if (username === "GxyennDev" && password === "171210") {
+                alert("Login berhasil!");
+                window.location.href = "panel.html";
+            } else {
+                alert("Username atau Password salah!");
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Prodactyl Panel</div>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+        <p><a href="#">Lupa Password?</a> | <a href="#">Buat Akun</a></p>
+    </div>
+    <div class="footer">Dev: Gxyenn</div>
+</body>
+</html>
