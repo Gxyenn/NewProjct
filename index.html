@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel Prodactyl</title>
     <style>
-        /* Styles are the same as before. You can retain the previous styles. */
+        /* Existing styles */
         .server-created {
             margin: 10px 0;
             background-color: #f1f1f1;
@@ -51,6 +51,65 @@
             background-color: #f44336;
             color: white;
         }
+
+        /* File upload section */
+        .file-upload {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        .file-upload input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        /* Create file section */
+        .create-file {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        .create-file input[type="text"] {
+            margin-bottom: 10px;
+        }
+
+        .console-box {
+            margin-top: 20px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        .console-box button {
+            margin: 5px;
+            padding: 10px;
+        }
+
+        .notification {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .notification.green {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .notification.red {
+            background-color: #F44336;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -71,8 +130,12 @@
     <div class="server-box" id="serverBox" style="display: none;">
         <button onclick="showCreateServerBox()">Create Server</button>
         <div id="serverList"></div>
+        <button onclick="showFileUploadBox()">File Upload</button>
+        <button onclick="showCreateFileBox()">Create File</button>
+        <button onclick="showConsoleBox()">Console</button>
     </div>
 
+    <!-- Create Server Section -->
     <div class="create-server-box" id="createServerBox">
         <h4>Create Server</h4>
         <input type="text" id="serverUsername" placeholder="Username (Max 12)">
@@ -93,6 +156,36 @@
         <div class="notification green" id="serverSuccess">Server is running</div>
     </div>
 
+    <!-- File Upload Section -->
+    <div class="file-upload" id="fileUploadBox">
+        <h4>File Upload</h4>
+        <input type="file" id="uploadFile">
+        <button onclick="uploadFile()">Upload</button>
+        <div class="notification green" id="fileUploadSuccess">File berhasil diupload!</div>
+        <div class="notification red" id="fileUploadError">Gagal mengupload file!</div>
+    </div>
+
+    <!-- Create File Section -->
+    <div class="create-file" id="createFileBox">
+        <h4>Create File</h4>
+        <input type="text" id="fileName" placeholder="Enter File Name">
+        <textarea id="fileContent" placeholder="Enter File Content"></textarea>
+        <button onclick="saveFile()">Save</button>
+        <div class="notification green" id="createFileSuccess">File berhasil dibuat!</div>
+        <div class="notification red" id="createFileError">Nama file dan konten tidak boleh kosong!</div>
+    </div>
+
+    <!-- Console Section -->
+    <div class="console-box" id="consoleBox">
+        <h4>Console</h4>
+        <button onclick="startConsole()">Start</button>
+        <button onclick="restartConsole()">Restart</button>
+        <button onclick="stopConsole()">Stop</button>
+        <textarea id="consoleOutput" readonly></textarea>
+        <div class="notification green" id="consoleSuccess">Server is running</div>
+        <div class="notification red" id="consoleError">Error!</div>
+    </div>
+
     <script>
         const validUsername = "Gxyenn";
         const validPassword = "171210";
@@ -100,6 +193,7 @@
         let servers = [];
         let currentServer = null;
 
+        // Login Function
         function login() {
             const username = document.getElementById("username").value;
             const password = document.getElementById("password").value;
@@ -123,12 +217,14 @@
             }
         }
 
+        // Show Create Server Box
         function showCreateServerBox() {
             if (isLoggedIn) {
                 document.getElementById("createServerBox").style.display = "block";
             }
         }
 
+        // Create Server Function
         function createServer() {
             const username = document.getElementById("serverUsername").value;
             const description = document.getElementById("serverDescription").value;
@@ -146,6 +242,7 @@
             }
         }
 
+        // Display Created Servers
         function displayServers() {
             const serverList = document.getElementById("serverList");
             serverList.innerHTML = "";
@@ -153,41 +250,98 @@
                 const serverDiv = document.createElement("div");
                 serverDiv.className = "server-created";
                 serverDiv.innerHTML = `${server.username} - ${server.description}`;
-                // Set click event for each server to open management
                 serverDiv.onclick = () => openServerManagement(index);
                 serverList.appendChild(serverDiv);
             });
         }
 
+        // Open Manage Server
         function openServerManagement(index) {
-            currentServer = servers[index];  // Set currentServer to the clicked server
-            document.getElementById("manageServerBox").style.display = "block";  // Show manage server box
-            document.getElementById("serverSuccess").style.display = "none";  // Hide success message initially
-            document.getElementById("serverError").style.display = "none";  // Hide error message initially
+            currentServer = servers[index];
+            document.getElementById("manageServerBox").style.display = "block";
         }
 
+        // Start Server
         function startServer() {
-            if (currentServer) {
-                document.getElementById("serverSuccess").style.display = "block";
-                document.getElementById("serverError").style.display = "none";
-            }
+            document.getElementById("serverSuccess").style.display = "block";
+            document.getElementById("serverError").style.display = "none";
         }
 
+        // Restart Server
         function restartServer() {
-            if (currentServer) {
-                document.getElementById("serverSuccess").style.display = "block";
-                document.getElementById("serverError").style.display = "none";
+            document.getElementById("serverSuccess").style.display = "block";
+            document.getElementById("serverError").style.display = "none";
+        }
+
+        // Stop Server
+        function stopServer() {
+            document.getElementById("serverSuccess").style.display = "none";
+            document.getElementById("serverError").style.display = "block";
+            document.getElementById("serverError").innerText = "Server has been stopped!";
+        }
+
+        // Show File Upload Box
+        function showFileUploadBox() {
+            document.getElementById("fileUploadBox").style.display = "block";
+        }
+
+        // File Upload
+        function uploadFile() {
+            const file = document.getElementById("uploadFile").files[0];
+            if (file) {
+                document.getElementById("fileUploadSuccess").style.display = "block";
+                document.getElementById("fileUploadError").style.display = "none";
+            } else {
+                document.getElementById("fileUploadError").style.display = "block";
+                document.getElementById("fileUploadSuccess").style.display = "none";
             }
         }
 
-        function stopServer() {
-            if (currentServer) {
-                document.getElementById("serverSuccess").style.display = "none";
-                document.getElementById("serverError").style.display = "block";
-                document.getElementById("serverError").innerText = "Server has been stopped!";
+        // Show Create File Box
+        function showCreateFileBox() {
+            document.getElementById("createFileBox").style.display = "block";
+        }
+
+        // Create File
+        function saveFile() {
+            const fileName = document.getElementById("fileName").value;
+            const fileContent = document.getElementById("fileContent").value;
+
+            if (fileName && fileContent) {
+                document.getElementById("createFileSuccess").style.display = "block";
+                document.getElementById("createFileError").style.display = "none";
+            } else {
+                document.getElementById("createFileError").style.display = "block";
+                document.getElementById("createFileSuccess").style.display = "none";
             }
+        }
+
+        // Show Console Box
+        function showConsoleBox() {
+            document.getElementById("consoleBox").style.display = "block";
+        }
+
+        // Start Console
+        function startConsole() {
+            document.getElementById("consoleSuccess").style.display = "block";
+            document.getElementById("consoleError").style.display = "none";
+            document.getElementById("consoleOutput").value = "Server started...";
+        }
+
+        // Restart Console
+        function restartConsole() {
+            document.getElementById("consoleSuccess").style.display = "block";
+            document.getElementById("consoleError").style.display = "none";
+            document.getElementById("consoleOutput").value = "Server restarting...";
+        }
+
+        // Stop Console
+        function stopConsole() {
+            document.getElementById("consoleSuccess").style.display = "none";
+            document.getElementById("consoleError").style.display = "block";
+            document.getElementById("consoleError").innerText = "Error! Server stopped.";
         }
     </script>
 
 </body>
-    </html>
+        </html>
