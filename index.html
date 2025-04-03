@@ -1,71 +1,109 @@
-<!DOCTYPE html><html lang="id">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prodactyl Panel</title>
+    <title>GxyennDev Chat</title>
     <style>
         body {
-            background-color: #000;
-            color: #fff;
             font-family: Arial, sans-serif;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .container {
-            background-color: #fff;
-            color: #000;
-            padding: 20px;
-            border-radius: 10px;
             text-align: center;
-            width: 300px;
+            transition: background 0.5s, color 0.5s;
         }
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        input, button {
+        .loading-container {
+            position: fixed;
             width: 100%;
+            height: 100%;
+            background: black;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .hidden {
+            display: none;
+        }
+        .profile-pic {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid;
+            animation: rainbow 2s linear infinite;
+        }
+        .chat-container {
+            width: 90%;
+            max-width: 400px;
+            margin: auto;
+            background: white;
             padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ccc;
             border-radius: 5px;
         }
-        button {
-            background-color: #000;
-            color: #fff;
-            cursor: pointer;
+        .chat-box {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 5px;
+            background: #f9f9f9;
         }
-        .footer {
+        .input-container {
+            display: flex;
             margin-top: 10px;
-            font-size: 10px;
-            color: #ccc;
+        }
+        .input-container input {
+            flex: 1;
+            padding: 5px;
+        }
+        @keyframes rainbow {
+            0% { border-color: red; }
+            25% { border-color: yellow; }
+            50% { border-color: green; }
+            75% { border-color: blue; }
+            100% { border-color: red; }
         }
     </style>
-    <script>
-        function login() {
-            var username = document.getElementById("username").value;
-            var password = document.getElementById("password").value;
-            if (username === "GxyennDev" && password === "171210") {
-                alert("Login berhasil!");
-                window.location.href = "panel.html";
-            } else {
-                alert("Username atau Password salah!");
-            }
-        }
-    </script>
 </head>
 <body>
-    <div class="container">
-        <div class="logo">Prodactyl Panel</div>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button onclick="login()">Login</button>
-        <p><a href="#">Lupa Password?</a> | <a href="#">Buat Akun</a></p>
+    <div class="loading-container" id="loading">Please wait a moment, accessing Server</div><div class="hidden" id="chatApp">
+    <img src="https://files.catbox.moe/j6x9zj.jpg" class="profile-pic" alt="Profile">
+    <p>GxyennDev</p>
+    
+    <div class="chat-container">
+        <div class="chat-box" id="chatBox"></div>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <button onclick="resetChat()">Reset</button>
     </div>
-    <div class="footer">Dev: Gxyenn</div>
+</div>
+
+<script>
+    setTimeout(() => {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('chatApp').classList.remove('hidden');
+    }, Math.random() * (8000 - 5000) + 5000);
+    
+    async function sendMessage() {
+        const input = document.getElementById('userInput');
+        const chatBox = document.getElementById('chatBox');
+        
+        if (input.value.trim() === '') return;
+        
+        const userMessage = `<div>User: ${input.value}</div>`;
+        chatBox.innerHTML += userMessage;
+        input.value = '';
+        
+        const response = await fetch(`https://api.siputzx.my.id/api/ai/gpt3?prompt=${encodeURIComponent(input.value)}&content=`);
+        const data = await response.json();
+        
+        chatBox.innerHTML += `<div>Bot: ${data.response}</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+    
+    function resetChat() {
+        document.getElementById('chatBox').innerHTML = '';
+    }
+</script>
+
 </body>
-</html>
+    </html>
