@@ -1,0 +1,14 @@
+{
+  "name": "terminal-vps",
+  "version": "1.0.0",
+  "description": "Terminal VPS HTML with backend and anti-sleep",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "node-fetch": "^3.4.1"
+  }
+}
