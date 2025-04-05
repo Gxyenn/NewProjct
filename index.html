@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Terminal VPS</title>
+  <title>Web Termux</title>
   <style>
     body {
-      background-color: #0d0d0d;
-      color: #00ff66;
-      font-family: monospace;
       margin: 0;
-      padding: 0;
-      overflow: hidden;
+      background: #000;
+      color: #00ff00;
+      font-family: monospace;
     }
     #loading {
       position: absolute;
@@ -19,35 +17,124 @@
       left: 50%;
       transform: translate(-50%, -50%);
       font-size: 24px;
-      animation: bounce 1s infinite alternate;
+      animation: bounce 0.5s infinite alternate;
     }
     @keyframes bounce {
-      0% { transform: translate(-50%, -60%); }
-      100% { transform: translate(-50%, -40%); }
+      from { transform: translate(-50%, -40%); }
+      to { transform: translate(-50%, -60%); }
     }
     #terminal {
       display: none;
-      padding: 20px;
+      padding: 10px;
+      white-space: pre-wrap;
     }
-    .line::before {
-      content: '$ ';
-      color: #00ff66;
+    .line {
+      display: flex;
+    }
+    .prompt {
+      margin-right: 5px;
+    }
+    .input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #00ff00;
+      font-family: inherit;
+      font-size: inherit;
+      outline: none;
+    }
+    #enterBtn {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #111;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      font-size: 18px;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-family: monospace;
+      z-index: 999;
     }
   </style>
 </head>
 <body>
   <div id="loading">Lloading!..</div>
-  <div id="terminal">
-    <div class="line">Welcome to Replit VPS Terminal</div>
-    <div class="line">Type a command to begin...</div>
-    <div class="line" contenteditable="true"></div>
-  </div>
+  <div id="terminal" onclick="focusInput()"></div>
+  <button id="enterBtn" onclick="manualEnter()">↵ Enter</button>
 
   <script>
+    const term = document.getElementById('terminal');
+
     setTimeout(() => {
       document.getElementById('loading').style.display = 'none';
-      document.getElementById('terminal').style.display = 'block';
-    }, Math.floor(Math.random() * 3000) + 5000); // 5–8 sec
+      term.style.display = 'block';
+      newLine();
+    }, Math.floor(Math.random() * 3000) + 5000);
+
+    function newLine() {
+      const line = document.createElement('div');
+      line.className = 'line';
+
+      const prompt = document.createElement('span');
+      prompt.className = 'prompt';
+      prompt.textContent = '$';
+
+      const input = document.createElement('input');
+      input.className = 'input';
+      input.autocomplete = 'off';
+      input.spellcheck = false;
+
+      input.addEventListener('focus', () => {
+        document.getElementById('enterBtn').style.display = 'block';
+      });
+      input.addEventListener('blur', () => {
+        setTimeout(() => {
+          document.getElementById('enterBtn').style.display = 'none';
+        }, 300);
+      });
+
+      input.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          const cmd = input.value;
+          input.disabled = true;
+          const res = await fetch('/exec', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ cmd })
+          });
+          const output = await res.text();
+          const outputDiv = document.createElement('div');
+          outputDiv.textContent = output;
+          term.appendChild(outputDiv);
+          newLine();
+          window.scrollTo(0, document.body.scrollHeight);
+        }
+      });
+
+      line.appendChild(prompt);
+      line.appendChild(input);
+      term.appendChild(line);
+      input.focus();
+    }
+
+    function focusInput() {
+      const inputs = document.querySelectorAll('.input');
+      const lastInput = inputs[inputs.length - 1];
+      lastInput.focus();
+    }
+
+    function manualEnter() {
+      const inputs = document.querySelectorAll('.input');
+      const lastInput = inputs[inputs.length - 1];
+      const enterEvent = new KeyboardEvent('keydown', {
+        key: 'Enter',
+        code: 'Enter',
+        bubbles: true,
+      });
+      lastInput.dispatchEvent(enterEvent);
+    }
   </script>
 </body>
 </html>
