@@ -6,69 +6,48 @@
   <title>Terminal VPS</title>
   <style>
     body {
-      background: black;
-      color: #00ff00;
+      background-color: #0d0d0d;
+      color: #00ff66;
       font-family: monospace;
-      padding: 0;
       margin: 0;
+      padding: 0;
+      overflow: hidden;
     }
     #loading {
-      animation: bounce 0.5s ease-in-out infinite alternate;
       position: absolute;
       top: 45%;
-      width: 100%;
-      text-align: center;
-      font-size: 2em;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 24px;
+      animation: bounce 1s infinite alternate;
     }
     @keyframes bounce {
-      from { transform: translateY(0); }
-      to { transform: translateY(-15px); }
+      0% { transform: translate(-50%, -60%); }
+      100% { transform: translate(-50%, -40%); }
     }
     #terminal {
       display: none;
-      padding: 1em;
-      white-space: pre-wrap;
+      padding: 20px;
     }
-    input {
-      background: transparent;
-      color: #00ff00;
-      border: none;
-      width: 100%;
-      font: inherit;
-      outline: none;
+    .line::before {
+      content: '$ ';
+      color: #00ff66;
     }
   </style>
 </head>
 <body>
-  <div id="loading">Loading!..</div>
-  <div id="terminal"></div>
+  <div id="loading">Lloading!..</div>
+  <div id="terminal">
+    <div class="line">Welcome to Replit VPS Terminal</div>
+    <div class="line">Type a command to begin...</div>
+    <div class="line" contenteditable="true"></div>
+  </div>
 
   <script>
     setTimeout(() => {
       document.getElementById('loading').style.display = 'none';
-      const term = document.getElementById('terminal');
-      term.style.display = 'block';
-      term.innerHTML = '$ ';
-      const input = document.createElement('input');
-      input.addEventListener('keydown', async (e) => {
-        if (e.key === 'Enter') {
-          const cmd = input.value;
-          term.innerHTML += cmd + '\n';
-          input.value = '';
-          const res = await fetch('/exec', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ cmd })
-          });
-          const data = await res.text();
-          term.innerHTML += data + '\n$ ';
-          term.appendChild(input);
-          input.focus();
-        }
-      });
-      term.appendChild(input);
-      input.focus();
-    }, 6000); // 6 detik animasi
+      document.getElementById('terminal').style.display = 'block';
+    }, Math.floor(Math.random() * 3000) + 5000); // 5–8 sec
   </script>
 </body>
 </html>
