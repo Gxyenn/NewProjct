@@ -1,4 +1,4 @@
-echo "<!DOCTYPE html><html lang="id">
+<!DOCTYPE html><html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -216,18 +216,25 @@ echo "<!DOCTYPE html><html lang="id">
     }
 
     async function sendMessage() {
-      const msg = document.getElementById('message').value.trim();
-      if (!msg) return;
-      appendMessage(msg, true);
-      document.getElementById('message').value = '';
+  const msg = document.getElementById('message').value;
+  if (!msg) return;
+  appendMessage(msg, true);
+  document.getElementById('message').value = '';
 
-      const res = await fetch(`https://api.siputzx.my.id/api/ai/gemini-pro?content=ai gunakan bahasa Indonesia=${encodeURIComponent(msg)}`);
-      const data = await res.json();
-      appendMessage(data.result);
+  const res = await fetch('/chat', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ message: msg })
+  });
+
+  const data = await res.json();
+  appendMessage(data.result);
     }
-
+      
     function resetChat() {
       document.getElementById('chat').innerHTML = '';
     }
   </script></body>
-</html>" > index.html
+</html>
