@@ -1,21 +1,21 @@
 const express = require('express');
 const { exec } = require('child_process');
-
-// Ganti node-fetch
-const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
-
 const app = express();
-const port = process.env.PORT || 3000;
 
-app.use(express.static('.'));
 app.use(express.json());
+app.use(express.static(__dirname)); // Serve index.html
 
-app.post('/exec', (req, res) => {
-  const cmd = req.body.cmd;
-  exec(cmd, { timeout: 10000 }, (err, stdout, stderr) => {
-    if (err) return res.send(stderr || err.message);
+app.post('/execute', (req, res) => {
+  const { cmd } = req.body;
+  exec(cmd, { cwd: __dirname }, (err, stdout, stderr) => {
+    if (err) return res.send(stderr);
     res.send(stdout);
   });
 });
 
-app.listen(port, () => console.log(`Server ready on http://localhost:${port}`));
+// Anti sleep ping
+setInterval(() => {
+  console.log("Keepalive ping");
+}, 1000 * 60 * 5);
+
+app.listen(3000, () => console.log("Terminal server ready on port 3000"));
