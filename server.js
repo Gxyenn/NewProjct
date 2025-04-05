@@ -1,21 +1,22 @@
 const express = require('express');
-const { exec } = require('child_process');
 const app = express();
+const { exec } = require('child_process');
+const path = require('path');
 
+app.use(express.static(path.join(__dirname)));
 app.use(express.json());
-app.use(express.static(__dirname)); // Serve index.html
+app.use(express.urlencoded({ extended: true }));
 
 app.post('/execute', (req, res) => {
-  const { cmd } = req.body;
-  exec(cmd, { cwd: __dirname }, (err, stdout, stderr) => {
-    if (err) return res.send(stderr);
+  const command = req.body.command;
+  exec(command, { cwd: __dirname }, (error, stdout, stderr) => {
+    if (error) return res.send(error.message);
+    if (stderr) return res.send(stderr);
     res.send(stdout);
   });
 });
 
-// Anti sleep ping
-setInterval(() => {
-  console.log("Keepalive ping");
-}, 1000 * 60 * 5);
-
-app.listen(3000, () => console.log("Terminal server ready on port 3000"));
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Terminal running on port ${port}`);
+});
