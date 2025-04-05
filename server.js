@@ -1,5 +1,9 @@
 const express = require('express');
 const { exec } = require('child_process');
+
+// Ganti node-fetch
+const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
+
 const app = express();
 const port = process.env.PORT || 3000;
 
