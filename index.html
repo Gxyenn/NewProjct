@@ -1,347 +1,233 @@
-<!DOCTYPE html>
-<html lang="id">
+echo "<!DOCTYPE html><html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Prodactyl</title>
-    <style>
-        /* Existing styles */
-        .server-created {
-            margin: 10px 0;
-            background-color: #f1f1f1;
-            padding: 10px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            display: flex;
-            justify-content: space-between;
-            cursor: pointer;
-        }
-
-        .server-created:hover {
-            background-color: #ddd;
-        }
-
-        .manage-server {
-            display: none;
-            margin-top: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        .manage-server button {
-            padding: 10px;
-            border-radius: 5px;
-            margin: 5px;
-            cursor: pointer;
-        }
-
-        .manage-server .start {
-            background-color: #007bff;
-            color: white;
-        }
-
-        .manage-server .restart {
-            background-color: #ffc107;
-            color: white;
-        }
-
-        .manage-server .stop {
-            background-color: #f44336;
-            color: white;
-        }
-
-        /* File upload section */
-        .file-upload {
-            margin-top: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            display: none;
-        }
-
-        .file-upload input[type="file"] {
-            margin-bottom: 10px;
-        }
-
-        /* Create file section */
-        .create-file {
-            margin-top: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            display: none;
-        }
-
-        .create-file input[type="text"] {
-            margin-bottom: 10px;
-        }
-
-        .console-box {
-            margin-top: 20px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-            display: none;
-        }
-
-        .console-box button {
-            margin: 5px;
-            padding: 10px;
-        }
-
-        .notification {
-            padding: 10px;
-            border-radius: 5px;
-            margin-top: 10px;
-            display: none;
-        }
-
-        .notification.green {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .notification.red {
-            background-color: #F44336;
-            color: white;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ChatAi-Me by Gxyenn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: #0e0e0e;
+      color: white;
+      overflow: hidden;
+    }
+    .loading-screen {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 9999;
+    }
+    .loading-image {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      border: 5px solid transparent;
+      border-top: 5px solid #0ff;
+      animation: spin 2s linear infinite;
+      background-image: url('https://files.catbox.moe/9qipex.jpg');
+      background-size: cover;
+      background-position: center;
+    }
+    .loading-text {
+      margin-top: 20px;
+      font-size: 24px;
+      animation: colorchange 2s infinite;
+    }
+    @keyframes spin {
+      from {transform: rotate(0deg);}
+      to {transform: rotate(360deg);}
+    }
+    @keyframes colorchange {
+      0% { color: #0ff; }
+      25% { color: #f0f; }
+      50% { color: #ff0; }
+      75% { color: #0f0; }
+      100% { color: #0ff; }
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      padding: 10px;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 999;
+    }
+    .top-bar img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      margin-right: 10px;
+      animation: colorchange 3s infinite;
+    }
+    .top-bar .dev-name {
+      font-size: 18px;
+      animation: colorchange 3s infinite;
+    }
+    .logo-spotify {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-spotify img {
+      width: 30px;
+    }
+    .logo-spotify button {
+      background: none;
+      border: 1px solid white;
+      color: white;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      background: rgba(255,255,255,0.05);
+      border-radius: 15px 15px 0 0;
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .bottom-bar img {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+    }
+    .bottom-bar .label {
+      font-size: 20px;
+      color: #0ff;
+    }
+    .chat-container {
+      position: absolute;
+      top: 70px;
+      bottom: 100px;
+      left: 0;
+      right: 0;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .chat-bubble {
+      max-width: 70%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+    }
+    .chat-user {
+      background: #0ff2;
+      margin-left: auto;
+    }
+    .chat-bot {
+      background: #fff2;
+      margin-right: auto;
+    }
+    .chat-input {
+      position: fixed;
+      bottom: 60px;
+      width: 100%;
+      display: flex;
+      padding: 10px;
+      gap: 10px;
+    }
+    .chat-input input[type="file"] {
+      display: none;
+    }
+    .chat-input textarea {
+      flex: 1;
+      padding: 10px;
+      border-radius: 10px;
+      border: none;
+      resize: none;
+    }
+    .chat-input button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 10px;
+      background: #0ff;
+      cursor: pointer;
+    }
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #aaa;
+      animation: colorchange 4s infinite;
+      position: fixed;
+      bottom: 5px;
+      width: 100%;
+    }
+  </style>
 </head>
 <body>
+  <div class="loading-screen" id="loading">
+    <div class="loading-image"></div>
+    <div class="loading-text">Loading!</div>
+  </div>  <div class="top-bar">
+    <img src="https://files.catbox.moe/9qipex.jpg" alt="pfp">
+    <div class="dev-name">GxyennDev</div>
+  </div>  <div class="logo-spotify">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/8/84/Spotify_icon.svg" alt="Spotify">
+    <button>⏮️</button>
+    <button>▶️</button>
+    <button>⏭️</button>
+  </div>  <div class="chat-container" id="chat"></div>  <div class="chat-input">
+    <label for="upload"><button>+</button></label>
+    <input type="file" id="upload" multiple>
+    <textarea id="message" rows="1" placeholder="Tulis pesan..."></textarea>
+    <button onclick="sendMessage()">Kirim</button>
+    <button onclick="resetChat()">Reset</button>
+  </div>  <div class="bottom-bar">
+    <img src="https://files.catbox.moe/9qipex.jpg" alt="">
+    <div class="label">ChatAi-Me</div>
+  </div>  <div class="footer">ChatAi - By Gxyenn</div>  <script>
+    // Loading delay
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loading').style.display = 'none';
+      }, 2000);
+    });
 
-    <div class="login-box" id="loginBox">
-        <h3>Login Prodactyl</h3>
-        <input type="text" id="username" placeholder="Username">
-        <input type="password" id="password" placeholder="Password">
-        <button id="loginBtn" onclick="login()">Login</button>
-        <div class="notification red" id="loginError">Akun tidak valid!</div>
-        <div class="notification green" id="loginSuccess">Login berhasil!</div>
-    </div>
+    function appendMessage(content, isUser = false) {
+      const chat = document.getElementById('chat');
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${isUser ? 'chat-user' : 'chat-bot'}`;
+      bubble.innerHTML = content;
+      chat.appendChild(bubble);
+      chat.scrollTop = chat.scrollHeight;
+    }
 
-    <div class="panel-header" id="panelHeader" style="display: none;">
-        <span>Panel Prodactyl</span>
-    </div>
+    async function sendMessage() {
+      const msg = document.getElementById('message').value.trim();
+      if (!msg) return;
+      appendMessage(msg, true);
+      document.getElementById('message').value = '';
 
-    <div class="server-box" id="serverBox" style="display: none;">
-        <button onclick="showCreateServerBox()">Create Server</button>
-        <div id="serverList"></div>
-        <button onclick="showFileUploadBox()">File Upload</button>
-        <button onclick="showCreateFileBox()">Create File</button>
-        <button onclick="showConsoleBox()">Console</button>
-    </div>
+      const res = await fetch(`https://api.siputzx.my.id/api/ai/gemini-pro?content=ai gunakan bahasa Indonesia=${encodeURIComponent(msg)}`);
+      const data = await res.json();
+      appendMessage(data.result);
+    }
 
-    <!-- Create Server Section -->
-    <div class="create-server-box" id="createServerBox">
-        <h4>Create Server</h4>
-        <input type="text" id="serverUsername" placeholder="Username (Max 12)">
-        <input type="text" id="serverDescription" placeholder="Description (Max 15)">
-        <input type="password" id="serverPassword" placeholder="Password">
-        <button id="createServerBtn" onclick="createServer()">Create</button>
-        <div class="notification red" id="createError">Password tidak valid atau huruf melebihi batas!</div>
-        <div class="notification green" id="createSuccess">Server berhasil dibuat!</div>
-    </div>
-
-    <!-- Manage Server Area -->
-    <div class="manage-server" id="manageServerBox">
-        <h4>Manage Server</h4>
-        <button class="start" onclick="startServer()">Start</button>
-        <button class="restart" onclick="restartServer()">Restart</button>
-        <button class="stop" onclick="stopServer()">Stop</button>
-        <div class="notification red" id="serverError"></div>
-        <div class="notification green" id="serverSuccess">Server is running</div>
-    </div>
-
-    <!-- File Upload Section -->
-    <div class="file-upload" id="fileUploadBox">
-        <h4>File Upload</h4>
-        <input type="file" id="uploadFile">
-        <button onclick="uploadFile()">Upload</button>
-        <div class="notification green" id="fileUploadSuccess">File berhasil diupload!</div>
-        <div class="notification red" id="fileUploadError">Gagal mengupload file!</div>
-    </div>
-
-    <!-- Create File Section -->
-    <div class="create-file" id="createFileBox">
-        <h4>Create File</h4>
-        <input type="text" id="fileName" placeholder="Enter File Name">
-        <textarea id="fileContent" placeholder="Enter File Content"></textarea>
-        <button onclick="saveFile()">Save</button>
-        <div class="notification green" id="createFileSuccess">File berhasil dibuat!</div>
-        <div class="notification red" id="createFileError">Nama file dan konten tidak boleh kosong!</div>
-    </div>
-
-    <!-- Console Section -->
-    <div class="console-box" id="consoleBox">
-        <h4>Console</h4>
-        <button onclick="startConsole()">Start</button>
-        <button onclick="restartConsole()">Restart</button>
-        <button onclick="stopConsole()">Stop</button>
-        <textarea id="consoleOutput" readonly></textarea>
-        <div class="notification green" id="consoleSuccess">Server is running</div>
-        <div class="notification red" id="consoleError">Error!</div>
-    </div>
-
-    <script>
-        const validUsername = "Gxyenn";
-        const validPassword = "171210";
-        let isLoggedIn = false;
-        let servers = [];
-        let currentServer = null;
-
-        // Login Function
-        function login() {
-            const username = document.getElementById("username").value;
-            const password = document.getElementById("password").value;
-
-            if (username === validUsername && password === validPassword) {
-                document.getElementById("loginSuccess").style.display = "block";
-                document.getElementById("loginError").style.display = "none";
-                document.getElementById("loginBtn").textContent = "Loading...";
-                setTimeout(() => {
-                    document.getElementById("loginBtn").textContent = "Login";
-                    document.getElementById("loginBox").style.display = "none";
-                    document.getElementById("panelHeader").style.display = "block";
-                    document.getElementById("serverBox").style.display = "block";
-                    isLoggedIn = true;
-                }, 3000);
-            } else {
-                document.getElementById("loginError").style.display = "block";
-                document.getElementById("loginSuccess").style.display = "none";
-                document.getElementById("username").value = "";
-                document.getElementById("password").value = "";
-            }
-        }
-
-        // Show Create Server Box
-        function showCreateServerBox() {
-            if (isLoggedIn) {
-                document.getElementById("createServerBox").style.display = "block";
-            }
-        }
-
-        // Create Server Function
-        function createServer() {
-            const username = document.getElementById("serverUsername").value;
-            const description = document.getElementById("serverDescription").value;
-            const password = document.getElementById("serverPassword").value;
-
-            if (password === validPassword && username.length <= 12 && description.length <= 15) {
-                servers.push({ username, description });
-                document.getElementById("createSuccess").style.display = "block";
-                document.getElementById("createError").style.display = "none";
-                document.getElementById("createServerBox").style.display = "none";
-                displayServers();
-            } else {
-                document.getElementById("createError").style.display = "block";
-                document.getElementById("createSuccess").style.display = "none";
-            }
-        }
-
-        // Display Created Servers
-        function displayServers() {
-            const serverList = document.getElementById("serverList");
-            serverList.innerHTML = "";
-            servers.forEach((server, index) => {
-                const serverDiv = document.createElement("div");
-                serverDiv.className = "server-created";
-                serverDiv.innerHTML = `${server.username} - ${server.description}`;
-                serverDiv.onclick = () => openServerManagement(index);
-                serverList.appendChild(serverDiv);
-            });
-        }
-
-        // Open Manage Server
-        function openServerManagement(index) {
-            currentServer = servers[index];
-            document.getElementById("manageServerBox").style.display = "block";
-        }
-
-        // Start Server
-        function startServer() {
-            document.getElementById("serverSuccess").style.display = "block";
-            document.getElementById("serverError").style.display = "none";
-        }
-
-        // Restart Server
-        function restartServer() {
-            document.getElementById("serverSuccess").style.display = "block";
-            document.getElementById("serverError").style.display = "none";
-        }
-
-        // Stop Server
-        function stopServer() {
-            document.getElementById("serverSuccess").style.display = "none";
-            document.getElementById("serverError").style.display = "block";
-            document.getElementById("serverError").innerText = "Server has been stopped!";
-        }
-
-        // Show File Upload Box
-        function showFileUploadBox() {
-            document.getElementById("fileUploadBox").style.display = "block";
-        }
-
-        // File Upload
-        function uploadFile() {
-            const file = document.getElementById("uploadFile").files[0];
-            if (file) {
-                document.getElementById("fileUploadSuccess").style.display = "block";
-                document.getElementById("fileUploadError").style.display = "none";
-            } else {
-                document.getElementById("fileUploadError").style.display = "block";
-                document.getElementById("fileUploadSuccess").style.display = "none";
-            }
-        }
-
-        // Show Create File Box
-        function showCreateFileBox() {
-            document.getElementById("createFileBox").style.display = "block";
-        }
-
-        // Create File
-        function saveFile() {
-            const fileName = document.getElementById("fileName").value;
-            const fileContent = document.getElementById("fileContent").value;
-
-            if (fileName && fileContent) {
-                document.getElementById("createFileSuccess").style.display = "block";
-                document.getElementById("createFileError").style.display = "none";
-            } else {
-                document.getElementById("createFileError").style.display = "block";
-                document.getElementById("createFileSuccess").style.display = "none";
-            }
-        }
-
-        // Show Console Box
-        function showConsoleBox() {
-            document.getElementById("consoleBox").style.display = "block";
-        }
-
-        // Start Console
-        function startConsole() {
-            document.getElementById("consoleSuccess").style.display = "block";
-            document.getElementById("consoleError").style.display = "none";
-            document.getElementById("consoleOutput").value = "Server started...";
-        }
-
-        // Restart Console
-        function restartConsole() {
-            document.getElementById("consoleSuccess").style.display = "block";
-            document.getElementById("consoleError").style.display = "none";
-            document.getElementById("consoleOutput").value = "Server restarting...";
-        }
-
-        // Stop Console
-        function stopConsole() {
-            document.getElementById("consoleSuccess").style.display = "none";
-            document.getElementById("consoleError").style.display = "block";
-            document.getElementById("consoleError").innerText = "Error! Server stopped.";
-        }
-    </script>
-
-</body>
-        </html>
+    function resetChat() {
+      document.getElementById('chat').innerHTML = '';
+    }
+  </script></body>
+</html>" > index.html
