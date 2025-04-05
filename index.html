@@ -1,140 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Web Termux</title>
+  <meta charset="UTF-8">
+  <title>Terminal VPS Style</title>
   <style>
-    body {
-      margin: 0;
-      background: #000;
-      color: #00ff00;
-      font-family: monospace;
-    }
-    #loading {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 24px;
-      animation: bounce 0.5s infinite alternate;
-    }
-    @keyframes bounce {
-      from { transform: translate(-50%, -40%); }
-      to { transform: translate(-50%, -60%); }
-    }
-    #terminal {
-      display: none;
-      padding: 10px;
-      white-space: pre-wrap;
-    }
-    .line {
-      display: flex;
-    }
-    .prompt {
-      margin-right: 5px;
-    }
-    .input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: #00ff00;
-      font-family: inherit;
-      font-size: inherit;
-      outline: none;
-    }
-    #enterBtn {
-      display: none;
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #111;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      font-size: 18px;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-family: monospace;
-      z-index: 999;
-    }
+    body { background: black; color: lime; font-family: monospace; padding: 0; margin: 0; }
+    #terminal { padding: 10px; white-space: pre-wrap; }
+    #inputBox { background: black; border: none; color: lime; width: 90%; font-size: 16px; }
+    #enterBtn { background: transparent; border: 1px solid lime; color: lime; padding: 5px 10px; cursor: pointer; }
   </style>
 </head>
-<body>
-  <div id="loading">Lloading!..</div>
-  <div id="terminal" onclick="focusInput()"></div>
-  <button id="enterBtn" onclick="manualEnter()">↵ Enter</button>
+<body onclick="focusInput()">
+  <div id="terminal">$</div>
+  <input id="inputBox" autofocus />
+  <button id="enterBtn" onclick="sendCommand()">↵ Enter</button>
 
   <script>
-    const term = document.getElementById('terminal');
-
-    setTimeout(() => {
-      document.getElementById('loading').style.display = 'none';
-      term.style.display = 'block';
-      newLine();
-    }, Math.floor(Math.random() * 3000) + 5000);
-
-    function newLine() {
-      const line = document.createElement('div');
-      line.className = 'line';
-
-      const prompt = document.createElement('span');
-      prompt.className = 'prompt';
-      prompt.textContent = '$';
-
-      const input = document.createElement('input');
-      input.className = 'input';
-      input.autocomplete = 'off';
-      input.spellcheck = false;
-
-      input.addEventListener('focus', () => {
-        document.getElementById('enterBtn').style.display = 'block';
-      });
-      input.addEventListener('blur', () => {
-        setTimeout(() => {
-          document.getElementById('enterBtn').style.display = 'none';
-        }, 300);
-      });
-
-      input.addEventListener('keydown', async (e) => {
-        if (e.key === 'Enter') {
-          const cmd = input.value;
-          input.disabled = true;
-          const res = await fetch('/exec', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ cmd })
-          });
-          const output = await res.text();
-          const outputDiv = document.createElement('div');
-          outputDiv.textContent = output;
-          term.appendChild(outputDiv);
-          newLine();
-          window.scrollTo(0, document.body.scrollHeight);
-        }
-      });
-
-      line.appendChild(prompt);
-      line.appendChild(input);
-      term.appendChild(line);
-      input.focus();
-    }
+    const terminal = document.getElementById('terminal');
+    const inputBox = document.getElementById('inputBox');
 
     function focusInput() {
-      const inputs = document.querySelectorAll('.input');
-      const lastInput = inputs[inputs.length - 1];
-      lastInput.focus();
+      inputBox.focus();
     }
 
-    function manualEnter() {
-      const inputs = document.querySelectorAll('.input');
-      const lastInput = inputs[inputs.length - 1];
-      const enterEvent = new KeyboardEvent('keydown', {
-        key: 'Enter',
-        code: 'Enter',
-        bubbles: true,
+    async function sendCommand() {
+      const cmd = inputBox.value;
+      terminal.innerHTML += ' ' + cmd + '\n';
+      inputBox.value = '';
+      const res = await fetch('/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cmd })
       });
-      lastInput.dispatchEvent(enterEvent);
+      const data = await res.text();
+      terminal.innerHTML += data + '\n$ ';
+      window.scrollTo(0, document.body.scrollHeight);
     }
+
+    inputBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') sendCommand();
+    });
   </script>
 </body>
 </html>
